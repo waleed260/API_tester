@@ -256,3 +256,18 @@ README.md             # This file
 8. **No retry logic** — transient failures (503, connection resets) are treated as hard failures.
 
 ### Suggested Improvements
+
+- Add a `discover_endpoints` tool that fetches `/openapi.json` or `/docs` and parses endpoint definitions
+- Auto-inject `Authorization` header from `--auth-token` into all tool calls
+- Add configurable test intensity presets (smoke test vs full regression)
+- Add structured logging for orchestrator and sub-agent activity
+- Add Pydantic model validation for the final report output
+- Add per-endpoint configuration (expected status codes, custom headers, validation rules)
+- Add unit/integration tests for the tool functions
+- Add a timeout parameter to `Runner.run()` to prevent hangs
+
+---
+
+## License
+
+MIT
