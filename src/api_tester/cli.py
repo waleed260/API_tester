@@ -89,6 +89,37 @@ async def cli_entry() -> None:
 
     os.environ["OPENAI_API_KEY"] = api_key
     load_dotenv()
+     endpoints = None
+    if args.endpoints:
+        endpoints = _parse_endpoints_arg(args.endpoints)
+        if endpoints is None:
+            print("Warning: Could not parse endpoints. Will auto-discover.", file=sys.stderr)
+
+    print(f"\n{'='*60}")
+    print(f"  API Testing Agent — {args.name}")
+    print(f"  Base URL: {args.base_url}")
+    print(f"{'='*60}\n")
+
+    try:
+        report = await run_full_test_suite(
+            api_name=args.name,
+            base_url=args.base_url,
+            auth_token=args.auth_token,
+            endpoints=endpoints,
+        )
+
+        # Output
+        if args.output:
+            with open(args.output, "w") as f:
+                f.write(report)
+            print(f"\nReport saved to: {args.output}")
+        else:
+            print("\n" + report)
+
+    except Exception as e:
+        print(f"\nError running test suite: {e}", file=sys.stderr)
+        sys.exit(1)
+
 
     # Parse endpoints
    
