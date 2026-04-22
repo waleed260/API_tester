@@ -234,4 +234,42 @@ README.md             # This file
 ```
 
 ---
+## Known Limitations & Improvements
+
+### Current Limitations
+
+1. **`load_test` — `duration_seconds` parameter is accepted but not enforced** — the function runs all `total_requests` regardless of time. A time-limit mechanism could be added via `asyncio.wait_for`.
+
+2. **`test_security` — `auth_token` parameter is defined but not actively used** — the auth test currently only checks for missing auth, not valid vs invalid token behavior.
+
+3. **`load_test` calls `asyncio.run()` internally** — if the Agents SDK ever executes tools inside an already-running event loop, this would raise `RuntimeError`. Consider using `asyncio.get_event_loop().run_until_complete()` or a thread-based approach.
+
+4. **No endpoint auto-discovery tool** — Phase 1 mentions discovery but there's no tool to fetch OpenAPI specs (`/openapi.json`, `/swagger.json`). The LLM probes the base URL manually, which is unreliable.
+
+5. **Auth token is not auto-injected** — the token is passed to the orchestrator's context but not automatically added to tool calls. The LLM must remember to include it in `headers_json`.
+
+6. **Error scenario payloads are hardcoded** — `test_error_scenario` uses `{"name": ..., "email": ...}` payloads, which assume the API accepts these fields. APIs with different schemas get meaningless test data.
+
+7. **No rate limiting or backoff** — rapid requests could trigger rate limits or get the tester's IP blocked on production APIs.
+
+8. **No retry logic** — transient failures (503, connection resets) are treated as hard failures.
+
+### Suggested Improvements
+
+
+
+- Add a `discover_endpoints` tool that fetches `/openapi.json` or `/docs` and parses endpoint definitions
+- Auto-inject `Authorization` header from `--auth-token` into all tool calls
+- Add configurable test intensity presets (smoke test vs full regression)
+- Add structured logging for orchestrator and sub-agent activity
+- Add Pydantic model validation for the final report output
+- Add per-endpoint configuration (expected status codes, custom headers, validation rules)
+- Add unit/integration tests for the tool functions
+- Add a timeout parameter to `Runner.run()` to prevent hangs
+
+---
+
+## License
+
+MIT
 
