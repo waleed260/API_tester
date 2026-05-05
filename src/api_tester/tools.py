@@ -340,3 +340,26 @@ def discover_endpoints(
                     endpoints.append({"path": endpoint_path, "url": full_url, "methods": found_methods})
                     methods[endpoint_path] = found_methods
 
+            if spec_found:
+                break  # Found a valid spec, stop searching
+
+        except Exception:
+            continue
+
+    if not spec_found:
+        # Fallback: try the base URL itself as an endpoint
+        return _json({
+            "endpoints": [{"path": "/", "url": base, "methods": ["GET"]}],
+            "methods": {"/": ["GET"]},
+            "auth_required": False,
+            "spec_found": False,
+            "note": "No OpenAPI/Swagger spec found. Test base URL manually.",
+        })
+
+    return _json({
+        "endpoints": endpoints,
+        "methods": methods,
+        "auth_required": auth_required,
+        "spec_found": True,
+        "total_endpoints": len(endpoints),
+    })
