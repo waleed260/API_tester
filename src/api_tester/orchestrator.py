@@ -104,29 +104,5 @@ def build_orchestrator(
         ],
     )
 
-    return orchestrator
-async def run_full_test_suite(
-    api_name: str,
-    base_url: str,
-    auth_token: Optional[str] = None,
-    endpoints: Optional[list[dict[str, Any]]] = None,
-) -> str:
-    """Run the complete API test suite via the orchestrator agent.
-
-    Returns the final text output from the agent (report).
-    """
-    orchestrator = build_orchestrator(api_name, base_url, auth_token, endpoints)
-
-    user_prompt = (
-        f"Run the full 6-phase test suite for the API '{api_name}' at {base_url}."
-    )
-    if endpoints:
-        user_prompt += f" Test these specific endpoints: {json.dumps(endpoints, indent=2)}"
-    else:
-        user_prompt += " Start by using the discover_endpoints tool to find available endpoints."
-
-    result = await Runner.run(orchestrator, input=user_prompt)
-
-    return result.final_output
 
 
