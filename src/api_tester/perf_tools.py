@@ -548,41 +548,4 @@ def compare_responses(
     Returns:
         JSON string with identical, differences, changed_fields.
     """
-    try:
-        response1 = json.loads(response1_json)
-        response2 = json.loads(response2_json)
-        compare_fields = json.loads(compare_fields_json) if compare_fields_json else []
-    except json.JSONDecodeError as e:
-        return _json({"error": str(e)})
-
-    body1 = response1.get("body", {})
-    body2 = response2.get("body", {})
-
-
-    if isinstance(body1, str) or isinstance(body2, str):
-        return _json({
-            "identical": body1 == body2,
-            "differences": ["One or both responses have non-JSON bodies"],
-            "changed_fields": [],
-        })
-
-    fields = compare_fields or list(set(list(body1.keys()) + list(body2.keys())))
-    differences: list[dict[str, Any]] = []
-    changed_fields: list[str] = []
-
-    for field in fields:
-        val1 = body1.get(field)
-        val2 = body2.get(field)
-        if val1 != val2:
-            differences.append({
-                "field": field,
-                "response1_value": val1,
-                "response2_value": val2,
-            })
-            changed_fields.append(field)
-
-    return _json({
-        "identical": len(differences) == 0,
-        "differences": differences,
-        "changed_fields": changed_fields,
-    })
+ 
